@@ -1,0 +1,14 @@
+[default]
+CURRENT_ENV = "@jinja {{this.current_env | lower}}" # development or production
+HOME_DIR = "@jinja {{env.HOME}}"
+DIR_INPUT="Entrada"
+DIR_OUTPUT="Saida"
+URL_CHECK_PUBLIC_IP = "https://ifconfig.me"
+NUM_TENTATIVAS_DOWNLOAD = 4
+
+APP_NAME="MDI PDE 2030 🚀"
+APP_VERSAO="1.0.0"
+APP_DESCRIPTION="API Documentação ! 🇧🇷"
+
+# S00
+DIR_RESOURCES="@jinja {{this.HOME_DIR}}/resources/planejamento/eolico/deck"

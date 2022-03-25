@@ -1,0 +1,9 @@
+[default]
+
+[development]
+RUN_S00 = true
+
+
+[production]
+RUN_S00 = true
+
