@@ -1,0 +1,193 @@
+[[package]]
+name = "coopr"
+version = "4.0.9597"
+description = "Coopr: a COmmon Optimization Python Repository"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+Pyomo = "*"
+
+[[package]]
+name = "et-xmlfile"
+version = "1.1.0"
+description = "An implementation of lxml.xmlfile for the standard library"
+category = "main"
+optional = false
+python-versions = ">=3.6"
+
+[[package]]
+name = "jsonpickle"
+version = "2.1.0"
+description = "Python library for serializing any arbitrary object graph into JSON"
+category = "main"
+optional = false
+python-versions = ">=2.7"
+
+[package.extras]
+docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
+testing = ["pytest (>=3.5,!=3.7.3)", "pytest-checkdocs (>=1.2.3)", "pytest-flake8", "pytest-black-multipy", "pytest-cov", "ecdsa", "feedparser", "numpy", "pandas", "pymongo", "scikit-learn", "sqlalchemy", "enum34", "jsonlib"]
+"testing.libs" = ["demjson", "simplejson", "ujson", "yajl"]
+
+[[package]]
+name = "openpyxl"
+version = "3.0.9"
+description = "A Python library to read/write Excel 2010 xlsx/xlsm files"
+category = "main"
+optional = false
+python-versions = ">=3.6"
+
+[package.dependencies]
+et-xmlfile = "*"
+
+[[package]]
+name = "ply"
+version = "3.11"
+description = "Python Lex & Yacc"
+category = "main"
+optional = false
+python-versions = "*"
+
+[[package]]
+name = "pyomo"
+version = "6.4.0"
+description = "Pyomo: Python Optimization Modeling Objects"
+category = "main"
+optional = false
+python-versions = ">=3.7"
+
+[package.dependencies]
+ply = "*"
+
+[package.extras]
+docs = ["Sphinx (>2)", "sphinx-copybutton", "sphinx-rtd-theme (>0.5)", "sphinxcontrib-jsmath", "sphinxcontrib-napoleon", "numpy"]
+optional = ["dill", "ipython", "matplotlib", "networkx", "numpy", "openpyxl", "pint", "python-louvain", "pyyaml", "sympy", "xlrd", "z3-solver", "casadi", "numdifftools", "pandas", "scipy", "seaborn", "pywin32"]
+tests = ["coverage", "pytest", "pytest-parallel", "parameterized", "pybind11"]
+
+[[package]]
+name = "pypiwin32"
+version = "223"
+description = ""
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+pywin32 = ">=223"
+
+[[package]]
+name = "python-dateutil"
+version = "2.8.2"
+description = "Extensions to the standard Python datetime module"
+category = "main"
+optional = false
+python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,>=2.7"
+
+[package.dependencies]
+six = ">=1.5"
+
+[[package]]
+name = "pywin32"
+version = "303"
+description = "Python for Window Extensions"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.source]
+type = "file"
+url = "install/pywin32-303-cp38-cp38-win_amd64.whl"
+
+[[package]]
+name = "six"
+version = "1.16.0"
+description = "Python 2 and 3 compatibility utilities"
+category = "main"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*"
+
+[[package]]
+name = "xlrd"
+version = "2.0.1"
+description = "Library for developers to extract data from Microsoft Excel (tm) .xls spreadsheet files"
+category = "main"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, !=3.5.*"
+
+[package.extras]
+build = ["wheel", "twine"]
+docs = ["sphinx"]
+test = ["pytest", "pytest-cov"]
+
+[[package]]
+name = "xlwt"
+version = "1.3.0"
+description = "Library to create spreadsheet files compatible with MS Excel 97/2000/XP/2003 XLS files, on any platform, with Python 2.6, 2.7, 3.3+"
+category = "main"
+optional = false
+python-versions = "*"
+
+[metadata]
+lock-version = "1.1"
+python-versions = "^3.8"
+content-hash = "f6f4af47ce7757423d78b5cfdd30bbb4fadaed1357c11f5d64fd1139981c03cb"
+
+[metadata.files]
+coopr = [
+    {file = "Coopr-4.0.9597.tar.gz", hash = "sha256:f5b8357b87eee764f874a9a7ee5c8de9fc108c3863bb15841a153674d7a687b2"},
+]
+et-xmlfile = [
+    {file = "et_xmlfile-1.1.0-py3-none-any.whl", hash = "sha256:a2ba85d1d6a74ef63837eed693bcb89c3f752169b0e3e7ae5b16ca5e1b3deada"},
+    {file = "et_xmlfile-1.1.0.tar.gz", hash = "sha256:8eb9e2bc2f8c97e37a2dc85a09ecdcdec9d8a396530a6d5a33b30b9a92da0c5c"},
+]
+jsonpickle = [
+    {file = "jsonpickle-2.1.0-py2.py3-none-any.whl", hash = "sha256:1dee77ddc5d652dfdabc33d33cff9d7e131d428007007da4fd6f7071ae774b0f"},
+    {file = "jsonpickle-2.1.0.tar.gz", hash = "sha256:84684cfc5338a534173c8dd69809e40f2865d0be1f8a2b7af8465e5b968dcfa9"},
+]
+openpyxl = [
+    {file = "openpyxl-3.0.9-py2.py3-none-any.whl", hash = "sha256:8f3b11bd896a95468a4ab162fc4fcd260d46157155d1f8bfaabb99d88cfcf79f"},
+    {file = "openpyxl-3.0.9.tar.gz", hash = "sha256:40f568b9829bf9e446acfffce30250ac1fa39035124d55fc024025c41481c90f"},
+]
+ply = [
+    {file = "ply-3.11-py2.py3-none-any.whl", hash = "sha256:096f9b8350b65ebd2fd1346b12452efe5b9607f7482813ffca50c22722a807ce"},
+    {file = "ply-3.11.tar.gz", hash = "sha256:00c7c1aaa88358b9c765b6d3000c6eec0ba42abca5351b095321aef446081da3"},
+]
+pyomo = [
+    {file = "Pyomo-6.4.0-cp310-cp310-macosx_10_15_x86_64.whl", hash = "sha256:1b4e8cc4a5cb93ee9e5f7090052904339ff318cf9b9fb1463b26fd1bbd5c0f25"},
+    {file = "Pyomo-6.4.0-cp310-cp310-manylinux_2_12_x86_64.manylinux2010_x86_64.whl", hash = "sha256:533fbf865b64b0c8ef3bb2f935a3e24ecedafb6f95801b631867f1d848ac846a"},
+    {file = "Pyomo-6.4.0-cp310-cp310-win_amd64.whl", hash = "sha256:d5d593c32beb760a2bb766b6e701c7f0e17e247b1c464a91f9140a61ba379009"},
+    {file = "Pyomo-6.4.0-cp37-cp37m-macosx_10_14_x86_64.whl", hash = "sha256:575bef8447561579f798c625606fa3c74a259a2f0e271e1442bcf3da5bfd379f"},
+    {file = "Pyomo-6.4.0-cp37-cp37m-manylinux_2_12_x86_64.manylinux2010_x86_64.whl", hash = "sha256:c5ca678afb12ebf42e4361ad5d8318d15b11375d3e26f14025ba9270cb226dcb"},
+    {file = "Pyomo-6.4.0-cp37-cp37m-win_amd64.whl", hash = "sha256:f5e155b159381d85f572cdcf4775fada5e4106ae94ef3d93a7c4de5a78deb0ca"},
+    {file = "Pyomo-6.4.0-cp38-cp38-macosx_10_14_x86_64.whl", hash = "sha256:7d4aab869a5d412e607c5b1df3452aef72de077b2895d4276409ea87a59c25d2"},
+    {file = "Pyomo-6.4.0-cp38-cp38-manylinux_2_12_x86_64.manylinux2010_x86_64.whl", hash = "sha256:929ad3e1c405767313f6a5b57e2d73815372f74b13cb590a6f724379aceb04a6"},
+    {file = "Pyomo-6.4.0-cp38-cp38-win_amd64.whl", hash = "sha256:12b9c04c12775b4203de7902793ec64bc031fe14d622147fdd6c81e806e8c952"},
+    {file = "Pyomo-6.4.0-cp39-cp39-macosx_10_15_x86_64.whl", hash = "sha256:2517f54f4f47eae329a129516de2a194797ca1c7e7f52bc1bfdc04942ff7374f"},
+    {file = "Pyomo-6.4.0-cp39-cp39-manylinux_2_12_x86_64.manylinux2010_x86_64.whl", hash = "sha256:90bd36d11b4f217e6362e6ca08e88a8d62c5cabb64da1776e1def08ca8c18ef3"},
+    {file = "Pyomo-6.4.0-cp39-cp39-win_amd64.whl", hash = "sha256:218011a6aef94fc4f5b353b1d1623df465c92e29870a1597a29caf66a001db71"},
+    {file = "Pyomo-6.4.0.tar.gz", hash = "sha256:b548825301b6bd4073a0620a8265d956153d53c12fca37cc7184fa54fce96222"},
+]
+pypiwin32 = [
+    {file = "pypiwin32-223-py3-none-any.whl", hash = "sha256:67adf399debc1d5d14dffc1ab5acacb800da569754fafdc576b2a039485aa775"},
+    {file = "pypiwin32-223.tar.gz", hash = "sha256:71be40c1fbd28594214ecaecb58e7aa8b708eabfa0125c8a109ebd51edbd776a"},
+]
+python-dateutil = [
+    {file = "python-dateutil-2.8.2.tar.gz", hash = "sha256:0123cacc1627ae19ddf3c27a5de5bd67ee4586fbdd6440d9748f8abb483d3e86"},
+    {file = "python_dateutil-2.8.2-py2.py3-none-any.whl", hash = "sha256:961d03dc3453ebbc59dbdea9e4e11c5651520a876d0f4db161e8674aae935da9"},
+]
+pywin32 = [
+    {file = "pywin32-303-cp38-cp38-win_amd64.whl", hash = "sha256:5b1acea81008650c8645aabd45361484a535c4cf5dd91438e8de95cb1c185deb"},
+]
+six = [
+    {file = "six-1.16.0-py2.py3-none-any.whl", hash = "sha256:8abb2f1d86890a2dfb989f9a77cfcfd3e47c2a354b01111771326f8aa26e0254"},
+    {file = "six-1.16.0.tar.gz", hash = "sha256:1e61c37477a1626458e36f7b1d82aa5c9b094fa4802892072e49de9c60c4c926"},
+]
+xlrd = [
+    {file = "xlrd-2.0.1-py2.py3-none-any.whl", hash = "sha256:6a33ee89877bd9abc1158129f6e94be74e2679636b8a205b43b85206c3f0bbdd"},
+    {file = "xlrd-2.0.1.tar.gz", hash = "sha256:f72f148f54442c6b056bf931dbc34f986fd0c3b0b6b5a58d013c9aef274d0c88"},
+]
+xlwt = [
+    {file = "xlwt-1.3.0-py2.py3-none-any.whl", hash = "sha256:a082260524678ba48a297d922cc385f58278b8aa68741596a87de01a9c628b2e"},
+    {file = "xlwt-1.3.0.tar.gz", hash = "sha256:c59912717a9b28f1a3c2a98fd60741014b06b043936dcecbc113eaaada156c88"},
+]
