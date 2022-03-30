@@ -2,86 +2,13 @@
 
 https://github.com/renan2scarvalho/MDI_PDE_2030
 
-# Instalação do Python 2.7 no Pyenv
 
-As instalações de versões antigas podem acarretar erros como:
+# Instalação dos pacotes
 
-```s
-pyenv install 2.7.12
-Downloading Python-2.7.12.tar.xz...
--> https://www.python.org/ftp/python/2.7.12/Python-2.7.12.tar.xz
-Installing Python-2.7.12...
-ERROR: The Python ssl extension was not compiled. Missing the OpenSSL lib?
-
-Please consult to the Wiki page to fix the problem.
-https://github.com/pyenv/pyenv/wiki/Common-build-problems
+Para a instalação dos pacotes, é recomendável primeiramente instalar o pacote `pywin32` antes da instaçãoa do pacote `pypiwin32`.
+A instalação, caso não seja bem sucedida, pode ser realizada através dos arquivos wheel, encontrados em: https://www.lfd.uci.edu/~gohlke/pythonlibs/
 
 
-BUILD FAILED (Ubuntu 20.04 using python-build 20180424)
-
-Inspect or clean up the working tree at /tmp/python-build.20220325171437.19875
-Results logged to /tmp/python-build.20220325171437.19875.log
-
-Last 10 log lines:
-rm -f /home/renan/.pyenv/versions/2.7.12/share/man/man1/python.1
-(cd /home/renan/.pyenv/versions/2.7.12/share/man/man1; ln -s python2.1 python.1)
-if test "xno" != "xno"  ; then \
-        case no in \
-                upgrade) ensurepip="--upgrade" ;; \
-                install|*) ensurepip="" ;; \
-        esac; \
-         ./python -E -m ensurepip \
-                $ensurepip --root=/ ; \
-fi
-```
-
-Neste caso, cheque se o OpenSSL está mesmo instalado com o seguinte comando, e caso não, instale-o
-
-```s
-openssl version
-```
-
-OBS: para versões antigas do Python (para CPython, <3.5.3 e <2.7.13) demandam OpenSSL 1.0 enquanto as versões mais novas demandam a versão 1.1.
-
-
-Primeiramente, instalar das dependencias binárias e ferramentas do Python em https://github.com/pyenv/pyenv/wiki#suggested-build-environment
-
-Os demais pré-requisitos podem ser encontrados em https://github.com/pyenv/pyenv/wiki/Common-build-problems
-
-
-
-
-
-# Instalação do Coopr
-
-Baixe o arquivo: https://files.pythonhosted.org/packages/aa/94/86bf0a9a39eca96358990677f7f5d75b627688fca4e1cfcefd74dbec5eb2/Coopr-4.0.9597.tar.gz
-
-```s
-tar -zxvf Coopr-4.0.9597.tar.gz
-Coopr-4.0.9597/
-Coopr-4.0.9597/AUTHORS.txt
-Coopr-4.0.9597/CHANGELOG.txt
-Coopr-4.0.9597/coopr/
-Coopr-4.0.9597/coopr/__init__.py
-Coopr-4.0.9597/coopr/pyomo/
-Coopr-4.0.9597/coopr/pyomo/__init__.py
-Coopr-4.0.9597/Coopr.egg-info/
-Coopr-4.0.9597/Coopr.egg-info/dependency_links.txt
-Coopr-4.0.9597/Coopr.egg-info/PKG-INFO
-Coopr-4.0.9597/Coopr.egg-info/requires.txt
-Coopr-4.0.9597/Coopr.egg-info/SOURCES.txt
-Coopr-4.0.9597/Coopr.egg-info/top_level.txt
-Coopr-4.0.9597/LICENSE.txt
-Coopr-4.0.9597/PKG-INFO
-Coopr-4.0.9597/README.txt
-Coopr-4.0.9597/setup.cfg
-Coopr-4.0.9597/setup.py
-```
-
-```s
-cd Coopr-4.0.9597
-python setup.py install --user
-```
 
 # Instruções Básicas do Modelo Computacional MDI
 

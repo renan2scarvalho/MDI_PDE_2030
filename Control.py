@@ -33,7 +33,7 @@ class Control:
         self.problema = Problema(self.recebe_dados, self.sin, self.isRestPotHabilitada, self.isRestExpJanHabilitada, self.isPerpetHabilitada, self.fatorCarga, self.anoValidadeTemp, self.fatorValidadeTemp, self.isIntercambLimitado, self.subsFic);
         
         # habilita o cplex
-        optsolver = SolverFactory("cplex", executable= "C:\\Program Files\\IBM\\ILOG\\CPLEX_Studio129\\cplex\\bin\\x64_win64\\cplex.exe");
+        optsolver = SolverFactory("cplex", executable= "C:/Program Files/IBM/ILOG/CPLEX_Studio_Community201/cplex/bin/x64_win64/cplex.exe");
         print ("Modelo Criado");
         self.problema.modelo.preprocess();
         print ("Pre-process executado");
@@ -105,7 +105,7 @@ class Control:
         # limpa o diretorio Temp para evitar problemas de memoria se o flag estiver ativo
         if (self.recebe_dados.pegaEscalar("O10")==1):
             print("Limpando arquivos temporarios")
-            pastaTemp = "C:\\Users\\" + str(os.getlogin()) + "\\AppData\\Local\\Temp";
+            pastaTemp = "C:/Users/" + str(os.getlogin()) + "/AppData/Local/Temp";
             for filename in os.listdir(pastaTemp):
                 file_path = os.path.join(pastaTemp, filename);
                 try:
