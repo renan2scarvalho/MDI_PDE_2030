@@ -120,6 +120,7 @@ class Sistema:
                 
                 # instancia a usina e aloca no respectivo subsistema
                 usinaUHE = UHE(self.fonte_dados, iUsina, iUHE, self.numHidros, self.numMeses, self.numMesesPos,  self.offsetHidro, self.tipoCombHidroEol, self.numEol);
+                # print(usinaUHE.nomeUsina)
             
                 # -1 eh referente ao fato de subsistemas comecarem do 0
                 self.subsistemas[int(usinaUHE.sis_index)-1].addUsinaUHE(usinaUHE);
@@ -128,8 +129,10 @@ class Sistema:
                 iUHE+=1;
                 
             elif (self.fonte_dados.pegaEscalar("D3",lin_offset=iUsina) > 0):
+
                 # instancia o Projeto de UHE e aloca no respectivo subsistema
                 projUHE = ProjetoUHE(self.fonte_dados, iUsina, iprojUHE, self.numHidros, self.numMeses, self.numMesesPos, self.offsetHidro, self.tipoCombHidroEol, self.numEol);
+                # print(projUHE.nomeUsina)
 
                 # -1 eh referente ao fato de subsistemas comecarem do 0
                 self.subsistemas[int(projUHE.sis_index)-1].addProjetoUHE(projUHE);
@@ -138,6 +141,7 @@ class Sistema:
                 iprojUHE+=1;
                 
             # incrementa o contador de usinas na aba
+            # print(iUsina)
             iUsina+=1;    
     
         # define a aba TERM
@@ -151,6 +155,7 @@ class Sistema:
             if (self.fonte_dados.pegaEscalar("D3",lin_offset=iUsina) == 0):
                 # instancia a usina e aloca no respectivo subsistema
                 usinaTermica = Termica(self.fonte_dados, "TERM", iUsina, iTerm, self.numMeses, self.numMesesPos);
+                # print(usinaTermica.nomeUsina)
 
                 # -1 eh referente ao fato de subsistemas comecarem do 0
                 self.subsistemas[int(usinaTermica.sis_index)-1].addUsinaTermica(usinaTermica);
@@ -161,6 +166,7 @@ class Sistema:
             elif (self.fonte_dados.pegaEscalar("D3",lin_offset=iUsina) > 0):
                 # instancia o Projeto de Termica e aloca no respectivo subsistema
                 projTermica = ProjetoTermica(self.fonte_dados, iUsina, iProjTerm, "TERM", self.numMeses, self.numMesesPos, False);
+                # print(projTermica.nomeUsina)
 
                 # -1 eh referente ao fato de subsistemas comecarem do 0
                 self.subsistemas[int(projTermica.sis_index)-1].addProjetoTermica(projTermica);
@@ -169,6 +175,7 @@ class Sistema:
                 iProjTerm+=1;
                 
             # incrementa o contador de usinas na aba
+            # print(iUsina)
             iUsina+=1;
     
         self.fonte_dados.defineAba("TermicasContinuas");
@@ -182,11 +189,13 @@ class Sistema:
             
             # instancia o Projeto de Termica e aloca no respectivo subsistema
             projTermica = ProjetoTermica(self.fonte_dados, iUsina, iProjTerm, "TermicasContinuas", self.numMeses, self.numMesesPos, True);
+            # print(projTermica.nomeUsina)
 
             # -1 eh referente ao fato de subsistemas comecarem do 0
             self.subsistemas[int(projTermica.sis_index)-1].addProjetoTermica(projTermica);
             
             # incrementa o contador de usinas na aba
+            # print(iUsina)
             iUsina+=1;
     
         self.fonte_dados.defineAba("Renov Ind.");
@@ -258,6 +267,7 @@ class Sistema:
                     self.subsistemas[int(self.fonte_dados.pegaEscalar("C3", lin_offset=iUsina))-1].montanteRenovExPCHPot[iper] += self.fonte_dados.pegaEscalar("E3", lin_offset=iUsina); 
             
             # incrementa o contador de usinas na aba
+            # print(iUsina)
             iUsina+=1;
     
     # atentar para o fato de que existem dois metodos totalizaSeries, um na classe Sistema e um na classe Subsistema
