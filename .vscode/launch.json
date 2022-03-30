@@ -8,7 +8,7 @@
             "program": "${file}",
             "console": "integratedTerminal",
             "justMyCode": true,
-            "args": ["C:/dev/MDI", "C:/dev/MDI/MDI.XLSX"]
+            "args": ["C:/dev/MDI", "C:/dev/MDI/MDI.XLS"]
         }
     ]
 }
