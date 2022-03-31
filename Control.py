@@ -96,7 +96,8 @@ class Control:
 
         # pega o numero de subsistemas na planilha geral
         self.recebe_dados.defineAba("GERAL");
-        self.nsis = int(self.recebe_dados.pegaEscalar("G10"));
+        # self.nsis = int(self.recebe_dados.pegaEscalar("G10"));
+        self.nsis = self.recebe_dados.pegaEscalar("G10")
 
         # verifica os parametros de impressao na aba inicial da planilha
         # tem que vir antes da criacao do problema pois na aba estao contidos os fatores de carga
