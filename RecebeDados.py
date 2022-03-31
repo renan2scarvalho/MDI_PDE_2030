@@ -10,7 +10,7 @@ class RecebeDados:
         # self.planilha = dadosExcel.open_workbook(plan_dados);
         print(f"Carregando a planilha {plan_dados}")
         start = datetime.now()
-        self.planilha = load_workbook(filename = plan_dados)
+        self.planilha = load_workbook(filename = plan_dados, data_only=True)
         print(f"Planilha carregada em {datetime.now() - start}")
         return;
     
