@@ -582,6 +582,8 @@ class Subsistema:
             self.nsis = nsis;
             self.numCondicoes = nCondicoes;
             self.nPatamares = numPatamares;
+
+            # print(f"subsistema {self.sis_index}")
             
             # declaracao das listas de usinas e de projetos de usinas
             self.listaUHE = [];
