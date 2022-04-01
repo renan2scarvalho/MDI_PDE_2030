@@ -33,6 +33,12 @@ outputs/*
 saida/*
 Saida
 logs/*
-#
+# arquivos gerados MDI
 erro.txt
+MDI script flow.pptx
 Pontos de inconsistência.docx
+balancoEnergiaSIN.txt
+pdispHidro.txt
+resultado.txt
+serieHidro.txt
+

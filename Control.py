@@ -237,7 +237,7 @@ class Control:
         # abre os arquivos
         saidaEner = open(self.caminho + "serieHidro.txt", "w");
         saidaPot = open(self.caminho + "pdispHidro.txt", "w");
-        
+        print("ESCRITA DAS SERIES DE ENERGIA E POTENCIA POR SUBSISTEMA")
         # percorre os cenarios
         for icen in range(sin.numHidros):
             

@@ -53,6 +53,8 @@ class Sistema:
     
     def importaDadosGerais(self):
 
+        print(f"IMPORTANDO DADOS GERAIS")
+
         # muda para a aba dos patamares para importar o numero de patamares porque sera usado na criacao dos subsistemas
         self.fonte_dados.defineAba(nomeAba = 'Patamar');
 
@@ -86,7 +88,8 @@ class Sistema:
         
         # sao retirados 2 dias para compatibilizar os formatos de data da classe do python com o excel - mudanca manual 
         dataBase = date(1900, 1, 1);
-        td = timedelta(days = (int(self.inicioSim)-2));
+        # td = timedelta(days = (int(self.inicioSim)-2));
+        td = timedelta(days = (int(self.inicioSim.day)-2))
         self.inicioSim = dataBase + td;
         
         # computa o ano inicial
@@ -111,7 +114,9 @@ class Sistema:
         
         # define a aba UHE
         self.fonte_dados.defineAba("UHE");
-        
+
+        print(f"IMPORTANDO AS UHEs")
+        start = datetime.now()
         # percorre a aba e aloca as usinas UHE em uma lista
         while (self.fonte_dados.pegaEscalar("A3", lin_offset=iUsina)is not None):
             
@@ -120,7 +125,7 @@ class Sistema:
                 
                 # instancia a usina e aloca no respectivo subsistema
                 usinaUHE = UHE(self.fonte_dados, iUsina, iUHE, self.numHidros, self.numMeses, self.numMesesPos,  self.offsetHidro, self.tipoCombHidroEol, self.numEol);
-                # print(usinaUHE.nomeUsina)
+                print(usinaUHE.nomeUsina)
             
                 # -1 eh referente ao fato de subsistemas comecarem do 0
                 self.subsistemas[int(usinaUHE.sis_index)-1].addUsinaUHE(usinaUHE);
@@ -132,7 +137,7 @@ class Sistema:
 
                 # instancia o Projeto de UHE e aloca no respectivo subsistema
                 projUHE = ProjetoUHE(self.fonte_dados, iUsina, iprojUHE, self.numHidros, self.numMeses, self.numMesesPos, self.offsetHidro, self.tipoCombHidroEol, self.numEol);
-                # print(projUHE.nomeUsina)
+                print(projUHE.nomeUsina)
 
                 # -1 eh referente ao fato de subsistemas comecarem do 0
                 self.subsistemas[int(projUHE.sis_index)-1].addProjetoUHE(projUHE);
@@ -142,12 +147,15 @@ class Sistema:
                 
             # incrementa o contador de usinas na aba
             # print(iUsina)
-            iUsina+=1;    
+            iUsina+=1;
+        print(f"Tempo de leitura das UHEs: {datetime.now() - start}")
     
         # define a aba TERM
         self.fonte_dados.defineAba("TERM");
         iUsina = 0;
-        
+
+        print(f"IMPORTANDO AS UTEs")
+        start = datetime.now()
         # percorre a aba TERM e aloca as usinas Termicas em uma lista
         while (self.fonte_dados.pegaEscalar("D3", lin_offset=iUsina)is not None):
             
@@ -155,7 +163,7 @@ class Sistema:
             if (self.fonte_dados.pegaEscalar("D3",lin_offset=iUsina) == 0):
                 # instancia a usina e aloca no respectivo subsistema
                 usinaTermica = Termica(self.fonte_dados, "TERM", iUsina, iTerm, self.numMeses, self.numMesesPos);
-                # print(usinaTermica.nomeUsina)
+                print(usinaTermica.nomeUsina)
 
                 # -1 eh referente ao fato de subsistemas comecarem do 0
                 self.subsistemas[int(usinaTermica.sis_index)-1].addUsinaTermica(usinaTermica);
@@ -166,7 +174,7 @@ class Sistema:
             elif (self.fonte_dados.pegaEscalar("D3",lin_offset=iUsina) > 0):
                 # instancia o Projeto de Termica e aloca no respectivo subsistema
                 projTermica = ProjetoTermica(self.fonte_dados, iUsina, iProjTerm, "TERM", self.numMeses, self.numMesesPos, False);
-                # print(projTermica.nomeUsina)
+                print(projTermica.nomeUsina)
 
                 # -1 eh referente ao fato de subsistemas comecarem do 0
                 self.subsistemas[int(projTermica.sis_index)-1].addProjetoTermica(projTermica);
@@ -177,10 +185,13 @@ class Sistema:
             # incrementa o contador de usinas na aba
             # print(iUsina)
             iUsina+=1;
+        print(f"Tempo de leitura das UTEs: {datetime.now() - start}")
     
         self.fonte_dados.defineAba("TermicasContinuas");
         iUsina = 0;
         
+        print("IMPORTANDO AS UTES GNL")
+        start = datetime.now()
         # percorre a aba TermicasContinuas e aloca as usinas Termicas em uma lista
         while (self.fonte_dados.pegaEscalar("A3", lin_offset=iUsina)is not None):
             
@@ -189,7 +200,7 @@ class Sistema:
             
             # instancia o Projeto de Termica e aloca no respectivo subsistema
             projTermica = ProjetoTermica(self.fonte_dados, iUsina, iProjTerm, "TermicasContinuas", self.numMeses, self.numMesesPos, True);
-            # print(projTermica.nomeUsina)
+            print(projTermica.nomeUsina)
 
             # -1 eh referente ao fato de subsistemas comecarem do 0
             self.subsistemas[int(projTermica.sis_index)-1].addProjetoTermica(projTermica);
@@ -197,15 +208,19 @@ class Sistema:
             # incrementa o contador de usinas na aba
             # print(iUsina)
             iUsina+=1;
+        print(f"Tempo de leitura das UTEs GNL: {datetime.now() - start}")
     
         self.fonte_dados.defineAba("Renov Ind.");
         iUsina = 0;
         
+        print(f"IMPORTANDO AS RENOVAVEIS IND")
+        start = datetime.now()
         # percorre a aba EOL Projetos e aloca os projetos de Renovavel em uma lista
         while (self.fonte_dados.pegaEscalar("A3", lin_offset=iUsina)is not None):
             
             # instancia o Projeto de Termica e aloca no respectivo subsistema
             projRenovavel = ProjetoRenovavel(self.fonte_dados, iUsina, iprojRenov, "Renov Ind.", self.numEol, self.tipoCombHidroEol, self.numHidros);
+            print(projRenovavel.nomeUsina)
 
             # -1 eh referente ao fato de subsistemas comecarem do 0
             self.subsistemas[int(projRenovavel.sis_index)-1].addProjetoRenovavel(projRenovavel);
@@ -215,15 +230,19 @@ class Sistema:
             
             # incrementa o contador de projetos Renovaveis
             iprojRenov+=1;
+        print(f"Tempo de leitura das RENOVAVEIS IND: {datetime.now() - start}")
 
         self.fonte_dados.defineAba("Armazenamento");
         iUsina = 0;
-        
+
+        print(f"IMPORTANDO TECNOLOGIAS DE ARMAZENAMENTO")
+        start = datetime.now()
         # percorre a aba Reversivel e aloca os projetos de Reversivel em uma lista
         while (self.fonte_dados.pegaEscalar("A3", lin_offset=iUsina)is not None):
             
             # instancia o Projeto de Reversivel e aloca no respectivo subsistema
             projReversivel = ProjetoReversivel(self.fonte_dados, iUsina, iprojReversivel, "Armazenamento");
+            print(projReversivel.nomeUsina)
 
             # -1 eh referente ao fato de subsistemas comecarem do 0
             self.subsistemas[int(projReversivel.sis_index)-1].addProjetoReversivel(projReversivel);
@@ -233,13 +252,18 @@ class Sistema:
             
             # incrementa o contador de projetos Reversiveis
             iprojReversivel+=1;
+        print(f"Tempo de leitura das TECNOLOGIAS DE ARMAZENAMENTO: {datetime.now() - start}")
             
         # loop para importar dados das usinas renovaveis existentes continuas e alocar nos subsistemas
         self.fonte_dados.defineAba("UNSI");
         iUsina = 0;
-            
+
+        print(f"IMPORTANDO UNSI")
+        start = datetime.now()
         # percorre a aba passando por cada Renovavel Existente
         while (self.fonte_dados.pegaEscalar("A3", lin_offset=iUsina)is not None):
+
+            print(self.fonte_dados.pegaEscalar("B3", lin_offset=iUsina))
         
             # verifica a data de entrada da renovavel decidida
             per_entrada = int(self.fonte_dados.pegaEscalar("G3", lin_offset=iUsina));
@@ -269,11 +293,14 @@ class Sistema:
             # incrementa o contador de usinas na aba
             # print(iUsina)
             iUsina+=1;
+        print(f"Tempo de leitura das UNSI: {datetime.now() - start}")
+
     
     # atentar para o fato de que existem dois metodos totalizaSeries, um na classe Sistema e um na classe Subsistema
     def totalizaSeries(self):
         # percorre os subsistemas e manda cada um totalizar suas series hidrologicas
         for subsis in self.subsistemas:
+            print(f"LEITURA DAS SERIES HIDROLOGICAS E GHMIN PARA SUBSISTEMA {subsis}")
             subsis.totalizaSeries();
         return;
 
@@ -290,6 +317,8 @@ class Sistema:
         else:
             print("opcao de combinacao de series hidrologicas com eolicas nao marcada");
         
+        print(f"Número de condições (hidrologias e séries eólicas): {self.numCondicoes}")
+
         return;
 
     def importaDurPatamar(self):
@@ -302,6 +331,7 @@ class Sistema:
         self.duracaoPatamar = [[0 for x in range(0,self.numMeses)] for y in range(0, self.nPatamares)];
 
         # importa os valores da duracao de cada patamar
+        print("LEITURA DA DURACAO DE CADA PATAMAR")
         linhaOffset = 0;
         for patamar in range(0, self.nPatamares):
             self.duracaoPatamar[patamar] = self.fonte_dados.pegaVetor("C6", "horizontal", self.numMeses, linhaOffset);
@@ -318,6 +348,7 @@ class Sistema:
         self.fonte_dados.defineAba('Fatores');
 
         # define fatores igual a 1 para todos os subsistemas e patamares
+        print("LEITURA DOS FATORES DE CONTRIBUIÇÃO PARA UNSI")
         for sis in range(self.nsis):
             for pat in range(self.nPatamares):
                 for per in range(12):
@@ -583,7 +614,7 @@ class Subsistema:
             self.numCondicoes = nCondicoes;
             self.nPatamares = numPatamares;
 
-            # print(f"subsistema {self.sis_index}")
+            print(f"LEITURA DOS DADOS DO SUBSISTEMA {self.sis_index}")
             
             # declaracao das listas de usinas e de projetos de usinas
             self.listaUHE = [];
@@ -623,12 +654,15 @@ class Subsistema:
             self.montanteRenovExPCHPot = [0 for iper in range(0,self.numMesesTotal)];
 
             # metodo para incorporar a carga de cada patamar
+            print(f"Leitura dos patamares")
             self.importaCargaPatamar();
             
             # metodo para incorporar os dados da demanda ao modelo
+            print(f"Calculo da demanda")
             self.importaDemanda();
             
             # metodo para importar dados de interligacao
+            print(f"Leitura dos intercambios")
             self.importaInterligacoes();
             
             return;
