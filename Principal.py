@@ -16,6 +16,7 @@ try:
     import os, shutil;
     from pprint import *;
 
+    from termcolor import colored
     from src.prompt_data import parametros_prompt
     from dynaconf import Dynaconf
     from src.init_loguru import get_loguru_logger

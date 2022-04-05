@@ -1,6 +1,7 @@
 try:
     from .RecebeDados import RecebeDados;
 
+    from termcolor import colored
     from dynaconf import Dynaconf
     from src.init_loguru import get_loguru_logger
     settings = Dynaconf(

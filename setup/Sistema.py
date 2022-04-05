@@ -6,8 +6,8 @@ try:
     from .Projeto import *;
     from .Restricoes import *;
     from datetime import *;
+    
     from termcolor import colored
-
     from src.prompt_data import parametros_prompt
     from dynaconf import Dynaconf
     from src.init_loguru import get_loguru_logger
@@ -137,7 +137,7 @@ class Sistema:
         self.fonte_dados.defineAba("UHE");
 
         logger.info(30*"-")
-        logger.info(colored("IMPORTANDO AS UHEs", color="blue"))
+        logger.info(colored("IMPORTANDO AS UHEs", color="yellow"))
         start = datetime.now()
         # percorre a aba e aloca as usinas UHE em uma lista
         while (self.fonte_dados.pegaEscalar("A3", lin_offset=iUsina)is not None):
@@ -177,7 +177,7 @@ class Sistema:
         iUsina = 0;
 
         logger.info(30*"-")
-        logger.info(colored("IMPORTANDO AS UTEs", color="blue"))
+        logger.info(colored("IMPORTANDO AS UTEs", color="yellow"))
         start = datetime.now()
         # percorre a aba TERM e aloca as usinas Termicas em uma lista
         while (self.fonte_dados.pegaEscalar("D3", lin_offset=iUsina)is not None):
@@ -213,7 +213,7 @@ class Sistema:
         self.fonte_dados.defineAba("TermicasContinuas");
         iUsina = 0;
         
-        logger.info(colored("IMPORTANDO AS UTEs INDICATIVAS", color="blue"))
+        logger.info(colored("IMPORTANDO AS UTEs INDICATIVAS", color="yellow"))
         logger.info(30*"-")
         start = datetime.now()
         # percorre a aba TermicasContinuas e aloca as usinas Termicas em uma lista
@@ -237,7 +237,7 @@ class Sistema:
         self.fonte_dados.defineAba("Renov Ind.");
         iUsina = 0;
         
-        logger.info(colored("IMPORTANDO AS RENOVAVEIS INDICATIVAS", color="blue"))
+        logger.info(colored("IMPORTANDO AS RENOVAVEIS INDICATIVAS", color="yellow"))
         start = datetime.now()
         # percorre a aba EOL Projetos e aloca os projetos de Renovavel em uma lista
         while (self.fonte_dados.pegaEscalar("A3", lin_offset=iUsina)is not None):
@@ -259,7 +259,7 @@ class Sistema:
         self.fonte_dados.defineAba("Armazenamento");
         iUsina = 0;
 
-        logger.info(colored("IMPORTANDO TECNOLOGIAS DE ARMAZENAMENTO", color="blue"))
+        logger.info(colored("IMPORTANDO TECNOLOGIAS DE ARMAZENAMENTO", color="yellow"))
         logger.info(30*"-")
         start = datetime.now()
         # percorre a aba Reversivel e aloca os projetos de Reversivel em uma lista
@@ -283,7 +283,7 @@ class Sistema:
         self.fonte_dados.defineAba("UNSI");
         iUsina = 0;
 
-        logger.info(colored("IMPORTANDO UNSI", color="blue"))
+        logger.info(colored("IMPORTANDO UNSI", color="yellow"))
         logger.info(30*"-")
         start = datetime.now()
         # percorre a aba passando por cada Renovavel Existente
@@ -342,7 +342,7 @@ class Sistema:
             self.numCondicoes = self.numHidros;
         else:
             logger.info("opcao de combinacao de series hidrologicas com eolicas nao marcada");
-        logger.fino(colored(f"Número de condições (hidrologias e séries eólicas): {self.numCondicoes}", color="yellow"))
+        logger.info(colored(f"Número de condições (hidrologias e séries eólicas): {self.numCondicoes}", color="yellow"))
         
 
         return;
@@ -758,7 +758,7 @@ class Subsistema:
             # define a aba da planilha em que estao os custos de expansao
             self.fonte_dados.defineAba("Exp Interc");
             logger.info(30*"-")
-            logger.info(colored(f"IMPORTANDO CUSTOS DE EXPANSÃO DE INTERCAMBIO", color="blue"))            
+            logger.info(colored(f"IMPORTANDO CUSTOS DE EXPANSAO DE INTERCAMBIO", color="blue"))            
             
             # carrega os valores de custo de expansao
             for jsis in range(0, self.nsis):
