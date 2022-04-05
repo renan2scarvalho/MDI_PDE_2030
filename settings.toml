@@ -12,3 +12,7 @@ APP_DESCRIPTION="API Documentação ! 🇧🇷"
 
 # S00
 DIR_RESOURCES="@jinja {{this.HOME_DIR}}/resources/planejamento/eolico/deck"
+
+
+# LOG FILES
+LOG_MONITOR = "logs/monitor_mdi.log"

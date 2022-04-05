@@ -1,17 +1,48 @@
-from Control import Control;
-import time;
-import sys;
-import traceback;
-import os, shutil;
-from pprint import *;
+"""
+    Description:
 
-#pega o caminho da pasta e o nome do xls de entrada
-if len(sys.argv) > 1:
-    caminho = sys.argv[1] + "\\";
-    planilha = sys.argv[2];
-else:
-    caminho = "X:\\SGE-Projetos\\02-Estudos\\33 - Problema da Expansão\\Python\\dev\\MDI PDE 2030\\";
-    planilha = "X:\\SGE-Projetos\\02-Estudos\\33 - Problema da Expansão\\Python\\dev\\MDI PDE 2030\\Modelo_Jorge_PDE_2030_v1 - 2019.06.04.xlsm";
+    Principal
+
+    Author:           @Renan
+    Created:          2022-04-05
+    Copyright:        (c) Ampere Consultoria Ltda
+"""
+
+try:
+    from setup.Control import Control;
+    import time;
+    import sys;
+    import traceback;
+    import os, shutil;
+    from pprint import *;
+
+    from src.prompt_data import parametros_prompt
+    from dynaconf import Dynaconf
+    from src.init_loguru import get_loguru_logger
+    settings = Dynaconf(
+        envvar_prefix="AMPERE",
+        settings_files=["settings.toml", ".secrets.toml"],
+        environments=True,
+        load_dotenv=True,
+    )
+    logger = get_loguru_logger()
+    logger.add(settings.LOG_MONITOR, rotation="10 MB")
+
+except ImportError as error:
+    print(error)
+    print(f"error.name: {error.name}")
+    print(f"error.path: {error.path}")    
+
+
+logger.info(30 * "-")
+logger.info(colored("EXECUTANDO SCRIPT PRINCIPAL", color="yellow"))
+logger.info(30 * "-")
+
+
+lst_args = parametros_prompt()
+caminho = lst_args.CAMINHO
+planilha = lst_args.PLANILHA
+
 
 # inicializa os principais objetos
 start = time.process_time();

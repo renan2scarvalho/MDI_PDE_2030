@@ -1,9 +1,0 @@
-pypiwin32
-Pyomo
-DateTime
-Jsonpickle
-Openpyxl
-Xlrd
-Xlwt
-python-dateutil
-Coopr
