@@ -8,6 +8,7 @@ from coopr.pyomo import *;
 from pyomo.environ import *;
 from pyomo.opt import *;
 import os, jsonpickle;
+from termcolor import colored
 
 class Control:
     
@@ -20,12 +21,16 @@ class Control:
         self.start = time;
 
         # carrega as configuracoes iniciais da planilha
-        print("Carregando Dados");
+        print(30*"-")
+        print(colored("Carregando Dados", color="yellow"));
+        print(30*"-")
         self.carregaInicio();
 
         # inicializa o sistema
         self.sin = Sistema(self.recebe_dados, self.tipoCombHidroEol);
-        print("Carregando Problema");
+        print(30*"-")
+        print(colored("Carregando Problema", color="yellow"));
+        print(30*"-")
 
         self.imprimeSeriesHidro();
  
@@ -182,8 +187,10 @@ class Control:
         # verifica se o usuario deseja usar todas as combinacoes de series hidrolicas e eolicas ou combinacoes intercaladas
         if (self.recebe_dados.pegaEscalar("O9")==1):
             self.tipoCombHidroEol = "completa";
+            print(colored("Combinação estocástica completa", color="yellow"))
         elif (self.recebe_dados.pegaEscalar("O10")==1):
             self.tipoCombHidroEol = "intercalada";
+            print(colored("Combinação estocástica intercalada", color="yellow"))
         else:
             print("Forma de incorporacao das series eolicas nao escolhida.");
         

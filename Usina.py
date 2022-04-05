@@ -21,7 +21,7 @@ class Usina(object):
         
         if (self.nomeAba != "Renov Ind."):
             
-            # indica se o projeto eh existente ou nao - existente > 0
+            # indica se o projeto e existente ou nao - existente > 0
             self.isProjeto = self.fonte_dados.pegaEscalar("D3", lin_offset=self.linhaOffset);
         
         return;

@@ -37,6 +37,9 @@ class Agrint:
         
         # reforca a aba da vez e cria as variaveis auxiliares
         self.fonte_dados.defineAba("AGRINT-Grupos");
+        print(30*"-")
+        print(colored("PEGANDO AGRUPAMENTOS DE INTERCÂMBIO - DE PARA", color="yellow"))
+        print(30*"-")
         linhaOffset = 4*self.indexAgrintInterno;
         colunaOffset = 0;
         
@@ -51,6 +54,9 @@ class Agrint:
         # pega os limites desse agrupamento
         # muda para a aba de limites
         self.fonte_dados.defineAba("AGRINT-Limites");
+        print(30*"-")
+        print(colored("PEGANDO FLUXOS DE INTERCÂMBIO - DE PARA", color="yellow"))
+        print(30*"-")       
         for ipat in range(0, self.npat):
             self.limites[ipat] = self.fonte_dados.pegaVetor("C2", lin_offset = linhaOffset, direcao = "horizontal", tamanho=self.nper);
             linhaOffset += 1;
