@@ -177,7 +177,7 @@ class Problema:
     
     def criaParametros(self):
         logger.info(30*"-")
-        logger.info(coored("CRIANDO PARAMETROS", color="green"))
+        logger.info(colored("CRIANDO PARAMETROS", color="green"))
         modelo = self.modelo;
         
         # hashs para a correta atribuicao dos valores de custo de operacao e capacidade
@@ -417,6 +417,9 @@ class Problema:
 
         # restricao de step
         def resStepUB(modelo, iStep, iper):
+            """Dados um ano inicial e final e valores mínimo e máximo para o step, o
+                modelo decide uma expansão uniforme neste período
+            """
             # a restricao subtrai os ultimos 12 meses
             step = modelo.sin.restricoes.Step[iStep];
             if ((iper >= step.anoInicial*12) and (iper < (step.anoFinal+1)*12) and (iper%12 == step.mes)): #restricao de step valida apenas para os meses de dezembro
@@ -447,6 +450,10 @@ class Problema:
 
         # restricao de limite
         def resLimiteAno(modelo, iRest, iper):
+            """
+            Fixa o limite máximo que a capacidade instalada de um projeto
+            ou grupo de projetos pode atingir em um dado mês e ano
+            """
             # a restricao eh valida apenas para o periodo definido
             rest = modelo.sin.restricoes.LimiteAno[iRest];
             if ((iper >= rest.anoInicial*12) and (iper < (rest.anoFinal+1)*12) and ((iper%12) == rest.mes)):
@@ -463,6 +470,11 @@ class Problema:
 
         # restricao de limite incremental
         def resLimiteIncAno(modelo, iRest, iper):
+            """
+            Fixa o acréscimo máximo que a capacidade instalada
+            de um projeto ou grupo de projetos pode ter em um dado mês de um ano em relação ao
+            mesmo mês do ano anterior
+            """
             # a restricao eh valida apenas para o periodo definido
             rest = modelo.sin.restricoes.LimiteIncAno[iRest];
             if ((iper >= rest.anoInicial*12) and (iper < (rest.anoFinal+1)*12)):
@@ -492,6 +504,11 @@ class Problema:
 
         # restricao de igualdade
         def resIgualdade(modelo, iRest, iper):
+            """
+            Fixa o valor que a capacidade instalada de um projeto ou grupo de
+            projetos deve atingir ou atribui valor 1 para a varável investimento de um projeto em um
+            dado mês e ano
+            """
             # a restricao eh valida apenas para o periodo definido
             rest = modelo.sin.restricoes.Igualdade[iRest];
             
@@ -519,6 +536,10 @@ class Problema:
 
         # restricao de igualdade maxima
         def resIgualdadeMax(modelo, iRest):
+            """
+            Atribui uma data máxima para que o valor da variável
+            investimento de um projeto seja igual a um
+            """
             # a restricao eh valida apenas para o periodo definido
             rest = modelo.sin.restricoes.IgualdadeMax[iRest];
             
@@ -534,6 +555,11 @@ class Problema:
 
         # restricao de proporcao entre duas fontes
         def resProporcao(modelo, iRest, iper):
+            """
+            Fixa uma proporção entre dois projetos de uma mesma fonte. 
+            Normalmente utilizado para balancear a evolução de capacidade instalada
+            de uma dada fonte entre regiões
+            """
             # a restricao eh valida apenas para o periodo definido
             rest = modelo.sin.restricoes.Proporcao[iRest];
             iper_rest = int((iper - rest.anoInicial*12)/12);
@@ -898,38 +924,53 @@ class Problema:
 
         # investimento em hidros apenas em janeiro/julho
         def resInvHidroJan(modelo, iproj, iper):
+            """
+            Restrição de expansão da oferta hidráulica apenas em janeiro e julho
+            """
             if iper%12 != 0 and iper%12 != 6:
                 return modelo.investHidro[iproj, iper] == 0;
             else: return Constraint.Feasible;
-        logger.info(colored("Restricao INVESTIMENTO UHE JAN-JUL", color="cyan"))
+        logger.info(colored("Restricao INVESTIMENTO UHE JAN E JUL", color="cyan"))
         modelo.invHidroJan = Constraint(modelo.projUHENova, modelo.periodosTotal, rule=resInvHidroJan);
 
         # investimento em termicas continuas apenas em janeiro/julho
         def resInvTermContJan(modelo, iproj, iper):
+            """
+            Restrição de expansão da oferta térmica apenas em janeiro e julho
+            """
             if iper%12 != 0 and iper%12 != 6:
                 return modelo.capTermCont[iproj, iper] == modelo.capTermCont[iproj, iper-1];
             else: return Constraint.Feasible;
-        logger.info(colored("Restricao INVESTIMENTO UTE JAN-JUL", color="cyan"))
+        logger.info(colored("Restricao INVESTIMENTO UTE JAN E JUL", color="cyan"))
         modelo.invTermContJan = Constraint(modelo.projTermCont, modelo.periodosTotal, rule=resInvTermContJan);
 
         # investimento em renovaveis continuas apenas em janeiro/julho
         def resInvRenovContJan(modelo, iproj, iper):
+            """
+            Restrição de expansão da oferta renovável apenas em janeiro e julho
+            """
             if iper%12 != 0 and iper%12 != 6:
                 return modelo.capRenovCont[iproj, iper] == modelo.capRenovCont[iproj, iper-1];
             else: return Constraint.Feasible;
-        logger.info(colored("Restricao INVESTIMENTO RENOVAVEIS JAN-JUL", color="cyan"))
+        logger.info(colored("Restricao INVESTIMENTO RENOVAVEIS JAN E JUL", color="cyan"))
         modelo.invRenovContJan = Constraint(modelo.projRenovCont, modelo.periodosTotal, rule=resInvRenovContJan);
 
         # investimento em expansao de intercambio apenas em janeiro/julho
         def resInvExpInterJan(modelo, isis, jsis, iper):
+            """
+            Restrição de expansão do intercâmbio apenas em janeiro e julho
+            """
             if iper%12 != 0 and iper%12 != 6:
                 return modelo.capExpInter[isis, jsis, iper] == modelo.capExpInter[isis, jsis, iper-1];
             else: return Constraint.Feasible;
-        logger.info(colored("Restricao INVESTIMENTO EXPANSAO INTERCAMBIO JAN-JUL", color="cyan"))
+        logger.info(colored("Restricao INVESTIMENTO EXPANSAO INTERCAMBIO JAN E JUL", color="cyan"))
         modelo.invExpInterJan = Constraint(modelo.subsistemas, modelo.subsistemas, modelo.periodosTotal, rule=resInvExpInterJan);
 
         # investimento em termicas continuas apenas em janeiro/julho
         def resInvReversivelJan(modelo, iproj, iper):
+            """
+            Restrição de expansão de projetos reversíveis apenas em janeiro e julho
+            """
             if iper%12 != 0 and iper%12 != 6:
                 return modelo.capReversivel[iproj, iper] == modelo.capReversivel[iproj, iper-1];
             else: return Constraint.Feasible;

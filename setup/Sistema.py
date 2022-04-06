@@ -326,7 +326,7 @@ class Sistema:
     def totalizaSeries(self):
         # percorre os subsistemas e manda cada um totalizar suas series hidrologicas
         for subsis in self.subsistemas:
-            print(f"LEITURA E SOMA DAS VAZOES, POTENCIA E GHMIN POR SUBSISTEMA")
+            print(f"LEITURA E SOMA DAS VAZOES, POTENCIA E GHMIN PARA SUBSISTEMA {subsis.sis_index}")
             subsis.totalizaSeries();
         return;
 

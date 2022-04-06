@@ -266,8 +266,10 @@ class Control:
         sin = self.sin;
         
         # abre os arquivos
-        saidaEner = open(self.caminho + "serieHidro.txt", "w");
-        saidaPot = open(self.caminho + "pdispHidro.txt", "w");
+        # saidaEner = open(self.caminho + "serieHidro.txt", "w");
+        saidaEner = open(self.caminho + "/" + "serieHidro.txt", "w");
+        # saidaPot = open(self.caminho + "pdispHidro.txt", "w");
+        saidaPot = open(self.caminho + "/" + "pdispHidro.txt", "w");
         logger.info(30*"-")
         logger.info(colored("ESCRITA DAS SERIES DE ENERGIA E POTENCIA POR SUBSISTEMA", color="yellow"))
         # percorre os cenarios
