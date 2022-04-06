@@ -7,6 +7,7 @@ try:
     from .Projeto import *;
     from coopr.pyomo import *;
 
+    from termcolor import colored
     from dynaconf import Dynaconf
     from src.init_loguru import get_loguru_logger
     settings = Dynaconf(
@@ -46,6 +47,9 @@ class Problema:
         return;
     
     def montaProblema (self):
+
+        logger.info(30*"-")
+        logger.info(colored("MONTANDO O PROBLEMA DE OTIMIZACAO", color="yellow"))
         # cria um Concrete Model do Pyomo
         self.modelo = ConcreteModel();
         
@@ -70,6 +74,9 @@ class Problema:
         return;
         
     def criaConjuntosBasicos(self):
+        logger.info(30*"-")
+        logger.info(colored("CRIANDO CONJUNTOS", color="green"))
+
         modelo = self.modelo;
         
         # conjunto de sistemas
@@ -126,6 +133,8 @@ class Problema:
             return (Binary);
     
     def criaVariaveisDecisao(self):
+        logger.info(30*"-")
+        logger.info(colored("CRIANDO VARIAVEIS DE DECISAO", color="green"))
         modelo = self.modelo;
         
         # variaveis de operacao (energia)
@@ -167,6 +176,8 @@ class Problema:
         return;
     
     def criaParametros(self):
+        logger.info(30*"-")
+        logger.info(coored("CRIANDO PARAMETROS", color="green"))
         modelo = self.modelo;
         
         # hashs para a correta atribuicao dos valores de custo de operacao e capacidade
@@ -273,6 +284,8 @@ class Problema:
         return;
     
     def criaRestricoes(self):
+        logger.info(30*"-")
+        logger.info(colored("CRIANDO RESTRICOES", color="green"))
         
         self.criaRestricoesDemanda();
         self.criaRestricoesCapacidades();
@@ -289,17 +302,21 @@ class Problema:
         return;
 
     def criaRestricoesHidro(self):
+        logger.info(30*"-")
+        logger.info(colored("Cria restricoes HIDRAULICAS", color="blue"))
         modelo = self.modelo;
         modelo.sin = self.sin;
         
         # produto da producao e patamar eh igual a serie de energia 
         def resSomatorioHidroNovas(modelo, iuhe, iper, icen):
             return ( sum(modelo.prodHidroNova[iuhe, ipat, iper, icen]*modelo.sin.duracaoPatamar[ipat][iper] for ipat in modelo.patamares) <= ( modelo.energHidroNova[iuhe,iper,icen]*(sum(modelo.investHidro[iuhe,iperaux] for iperaux in range(0,iper+1))) ) );
+        logger.info(colored("Restricao de NOVAS UHEs", coor="cyan"))
         modelo.somatorioHidroNovas = Constraint(modelo.projUHENova, modelo.periodosTotal, modelo.condicoes, rule=resSomatorioHidroNovas);
         
         # restricoes que acoplam a motorizacao das usinas novas com seu respectivo investimento
         def resMotorizacao(modelo, iuhe, iper):
             return ( sum(modelo.moto[iuhe, tau] for tau in range(iper+1)) <= sum(modelo.investHidro[iuhe,tau2]  for tau2 in range(iper+1)) );
+        logger.info(colored("Restricoes de MOTORIZACAO", color="cyan"))
         modelo.acoplaMotorizacao = Constraint(modelo.projUHENova, modelo.periodosTotal, rule=resMotorizacao);
         
         # restricoes que limitam a taxa de motorizacao
@@ -310,36 +327,44 @@ class Problema:
             if proj.nMesesMotorizacao > 0:
                 r = 1/proj.nMesesMotorizacao;
             return modelo.moto[iuhe,iper] <= r;        
+        logger.info(colored("Restricoes de TAXA DE MOTORIZACAO", color="cyan"))
         modelo.taxaMotorizacao = Constraint(modelo.projUHENova, modelo.periodosTotal, rule=resTaxaMotorizacao);
         
         # GHmax das hidro novas - restrito pela motorizacao
         def restGHMaxHidroNovas(modelo, iuhe, ipat, iper, icen):
             return (modelo.prodHidroNova[iuhe, ipat, iper, icen] <= modelo.sin.listaGeralProjUHE[iuhe].potDisp[icen][iper] * sum(modelo.moto[iuhe, tau] for tau in range(iper+1)));
+        logger.info(colored("Restricoes de GHMAX NOVAS UHEs", color="cyan"))
         modelo.GHMaxHidroNovas = Constraint(modelo.projUHENova, modelo.patamares, modelo.periodosTotal, modelo.condicoes, rule=restGHMaxHidroNovas);
         
         # GHmin das hidro novas - aplica a motorizacao para reduzir o ghmin
         def restGHMinHidroNovas(modelo, iuhe, ipat, iper, icen):
             return (modelo.prodHidroNova[iuhe, ipat, iper, icen] + modelo.penalidadeGHMinNova[iuhe, ipat, iper, icen] >= modelo.sin.listaGeralProjUHE[iuhe].ghMin * sum(modelo.moto[iuhe, tau] for tau in range(iper+1)) );
+        logger.info(colored("Restricoes de GHMIN NOVAS UHEs", color="cyan"))
         modelo.GHMinHidroNovas = Constraint(modelo.projUHENova, modelo.patamares, modelo.periodosTotal, modelo.condicoes, rule=restGHMinHidroNovas);
         
         # Soma produto hidro existentes
         def restSomatorioHidroExist(modelo, isis, iper, icen):
             return (sum(modelo.prodHidroExist[isis, ipat, iper, icen]*modelo.sin.duracaoPatamar[ipat][iper] for ipat in modelo.patamares) <= modelo.energiaHidroEx[isis, iper, icen]);
+        logger.info(colored("Restricoes de UHEs EXISTENTES", color="cyan"))
         modelo.somatorioHidroExist = Constraint(modelo.subsistemas, modelo.periodosTotal, modelo.condicoes, rule=restSomatorioHidroExist);
 
         # GHmax das hidro existentes
         def restGHMaxHidroExist(modelo, isis, ipat, iper, icen):
             return (modelo.prodHidroExist[isis, ipat, iper, icen] <= modelo.pDispHidroEx[isis,iper,icen]);
+        logger.info(colored("Restricoes de GHMAX UHEs EXISTENTES", color="cyan"))
         modelo.GHMaxHidroExist= Constraint(modelo.subsistemas, modelo.patamares, modelo.periodosTotal, modelo.condicoes, rule=restGHMaxHidroExist);
         
         # GHmin das hidro existentes
         def restGHMinHidroExist(modelo, isis, ipat, iper, icen):
             return (modelo.prodHidroExist[isis, ipat, iper, icen] + modelo.penalidadeGHMinExist[isis, ipat, iper, icen] >= modelo.sin.subsistemas[isis].ghMinTotalPer[iper]);
+        logger.info(colored("Restricoes de GHMIN UHEs EXISTENTES", color="cyan"))
         modelo.GHMinHidroExist = Constraint(modelo.subsistemas, modelo.patamares, modelo.periodosTotal, modelo.condicoes, rule=restGHMinHidroExist);
 
         return;
 
     def criaRestricoesReversiveis(self):
+        logger.info(30*"-")
+        logger.info(colored("Criando restricoes para REVERSIVEIS", color="blue"))
         modelo = self.modelo;
         modelo.sin = self.sin;
 
@@ -349,36 +374,44 @@ class Problema:
                 return (modelo.capReversivel[iproj,iper] == 0); 
             else:
                 return (modelo.capReversivel[iproj,iper] >= modelo.capReversivel[iproj,iper-1]); 
+        logger.info(colored("Restricao de INVESTIMENTO CRESCENTE REVERSIVEL", color="cyan"))
         modelo.naoInvReversivel = Constraint(modelo.projReversivel, modelo.periodosTotal, rule=restNaoInvReversivel);
 
         # geracao maxima reversivel
         def resProdMaxReversivel(modelo, iproj, iper, icen, ipat):
             return (modelo.prodReversivel[iproj, ipat, iper, icen] <= modelo.capReversivel[iproj,iper]);
+        logger.info(colored("Restricao de GER MAX REVERSIVEL", color="cyan"))
         modelo.prodMaxReversivel = Constraint(modelo.projReversivel, modelo.periodosTotal, modelo.condicoes, modelo.patamares, rule=resProdMaxReversivel);
 
         # bombeamento maximo reversivel
         def resBombMaxReversivel(modelo, iproj, iper, icen, ipat):
             return (modelo.bombReversivel[iproj, ipat, iper, icen] <= modelo.capReversivel[iproj,iper]);
+        logger.info(colored("Restricao de BOMBEAMENTO MAX REVERSIVEL", color="cyan"))
         modelo.bombMaxReversivel = Constraint(modelo.projReversivel, modelo.periodosTotal, modelo.condicoes, modelo.patamares, rule=resBombMaxReversivel);
 
         # somatorio patamares reversivel
         def resSomaPatReversivel(modelo, iproj, iper, icen):
             return (sum(modelo.prodReversivel[iproj, ipat, iper, icen]*modelo.sin.duracaoPatamar[ipat][iper] for ipat in modelo.patamares) <= modelo.rendReversivel[iproj]*sum(modelo.bombReversivel[iproj, ipat, iper, icen]*modelo.sin.duracaoPatamar[ipat][iper] for ipat in modelo.patamares));
+        logger.info(colored("Restricao de SOMA PATAMARES REVERSIVEL", color="cyan"))
         modelo.somaPatReversivel = Constraint(modelo.projReversivel, modelo.periodosTotal, modelo.condicoes, rule=resSomaPatReversivel);
 
         # restringe geracao reversivel - pode gerar na ponta, pesada e media e bombear na leve e media
         def resPatProdReversivel(modelo, iproj, ipat, iper, icen):
             return (modelo.prodReversivel[iproj, ipat, iper, icen] == 0);
+        logger.info(colored("Restricao de LIMITE DE GER POR PATAMAR", color="cyan"))
         modelo.patProdReversivel = Constraint(modelo.projReversivel, modelo.sin.naoGeraReversivel, modelo.periodosTotal, modelo.condicoes, rule=resPatProdReversivel);
 
         # restringe bombeamento reversivel - pode gerar na ponta, pesada e media e bombear na leve e media
         def resPatBombReversivel(modelo, iproj, ipat, iper, icen):
             return (modelo.bombReversivel[iproj, ipat, iper, icen] == 0);
+        logger.info(colored("Restricao de LIMITE DE BOMBEAMENTO POR PATAMAR", color="cyan"))
         modelo.patBombReversivel = Constraint(modelo.projReversivel, modelo.sin.naoBombReversivel, modelo.periodosTotal, modelo.condicoes, rule=resPatBombReversivel);
 
         return;
 
     def criaRestricoesAdicionais(self):
+        logger.info(30*"-")
+        logger.info(colored("Cria RESTRICOES ADICIONAIS", color="blue"))
         modelo = self.modelo;
         modelo.sin = self.sin;
 
@@ -399,7 +432,7 @@ class Problema:
                     elif (step.tipoProj == "Term"):
                         return (sum(modelo.capTermCont[term,iper]*modelo.sin.listaGeralProjTerm[term].potUsina for term in modelo.sin.restricoes.Step[iStep].listaProj) == modelo.steps[iStep]);
             else: return Constraint.Feasible;
-
+        logger.info(colored("Restricao de STEP", color="cyan"))
         modelo.atendeStepUB = Constraint(modelo.conjSteps, modelo.periodosTotal, rule=resStepUB);
 
         # minimos e maximos de steps
@@ -407,7 +440,9 @@ class Problema:
             return modelo.steps[iStep] >= modelo.sin.restricoes.Step[iStep].val_min;
         def restStepMax(modelo, iStep):
             return modelo.steps[iStep] <= modelo.sin.restricoes.Step[iStep].val_max;
+        logger.info(colored("Restricao de STEP MIN", color="cyan"))
         modelo.stepMin = Constraint(modelo.conjSteps, rule=restStepMin);
+        logger.info(colored("Restricao de STEP MAX", color="cyan"))
         modelo.stepMax = Constraint(modelo.conjSteps, rule=restStepMax);
 
         # restricao de limite
@@ -423,6 +458,7 @@ class Problema:
                     return (sum(modelo.capTermCont[term,iper]*modelo.sin.listaGeralProjTerm[term].potUsina for term in modelo.sin.restricoes.LimiteAno[iRest].listaProj) <= modelo.sin.restricoes.LimiteAno[iRest].valores[int(iper/12)]);
             else: 
                 return Constraint.Feasible;
+        logger.info(colored("Restricao de LIMITE DE EXPANSAO POR ANO", color="cyan"))
         modelo.LimiteAno = Constraint(modelo.conjLimiteAno, modelo.periodosTotal, rule=resLimiteAno);
 
         # restricao de limite incremental
@@ -451,6 +487,7 @@ class Problema:
                         return (sum((modelo.capReversivel[term,iper]) for term in modelo.sin.restricoes.LimiteIncAno[iRest].listaProj) <= modelo.sin.restricoes.LimiteIncAno[iRest].valores[int(iper/12)]);
             else: 
                 return Constraint.Feasible;
+        logger.info(colored("Restricao de LIMITE INCREMENTAL DE EXPANSAO POR ANO", color="cyan"))
         modelo.LimiteIncAno = Constraint(modelo.conjLimiteIncAno, modelo.periodosTotal, rule=resLimiteIncAno);
 
         # restricao de igualdade
@@ -477,6 +514,7 @@ class Problema:
                     return (sum(modelo.capReversivel[rev,iper] for rev in modelo.sin.restricoes.Igualdade[iRest].listaProj) == modelo.sin.restricoes.Igualdade[iRest].valores[int(iper/12)]);
             else: 
                 return Constraint.Feasible;
+        logger.info(colored("Restricao de IGUALDADE", color="cyan"))
         modelo.Igualdades = Constraint(modelo.conjIgualdade, modelo.periodosTotal, rule=resIgualdade);
 
         # restricao de igualdade maxima
@@ -490,7 +528,7 @@ class Problema:
                 return (sum(modelo.investHidro[hidro,iper] for hidro in rest.listaProj for iper in range(rest.anoInicial*12 + rest.mes)) == len(rest.listaProj));
             else: 
                 return Constraint.Feasible;
-
+        logger.info(colored("Restricao de IGUALDADE MAXIMA", color="cyan"))
         modelo.IgualdadesMax = Constraint(modelo.conjIgualdadeMax, rule=resIgualdadeMax);
         
 
@@ -520,14 +558,16 @@ class Problema:
                                 (modelo.sin.restricoes.Proporcao[iRest].valoresProj[0][iper_rest])/(sum(modelo.sin.restricoes.Proporcao[iRest].valoresProj[renov][iper_rest] for renov in range(len(modelo.sin.restricoes.Proporcao[iRest].listaProj))))));
             else: 
                 return Constraint.Feasible;
+        logger.info(colored("Restricao de PROPORCAO", color="cyan"))
         modelo.Proporcao = Constraint(modelo.conjProporcao, modelo.periodosTotal, rule=resProporcao);
 
         return;
 
     def criaRestricoesDemanda(self):
+        logger.info(30*"-")
+        logger.info(colored("Criando restricoes de DEMANDA", color="blue"))
         modelo = self.modelo;
         modelo.sin = self.sin;
-        
         # Restricao de atendimento a demanda de energia em cada cenario
         def restAtendeDemanda (modelo, isis, ipat, iper, icen):
             subsis = modelo.sin.subsistemas[isis];
@@ -623,17 +663,23 @@ class Problema:
         # o fator de demanda dos subsistemas eh o fator carga passado como parametro da aba inicial
         modelo.fatDem = self.fatorCarga;
 
-        # cria as restricoes 
+        # cria as restricoes
+        logger.info(colored("Restricao de ATENDIMENTO DA DEMANDA", color="cyan"))
         modelo.atendeDeman = Constraint(modelo.subsistemas, modelo.patamares, modelo.periodosTotal, modelo.condicoes, rule=restAtendeDemanda);
+        logger.info(colored("Restricao de DEMANDA MINIMA DO SISTEMA", color="cyan"))
         modelo.atendeDemanMinimaSistema = Constraint(modelo.subsistemas, modelo.patamares, modelo.periodosTotal, modelo.condicoes, rule=restAtendeDemandaMinimaNoSistema);
         
         # so executa essas restricoes caso a opcao 'habilitar restricao de potencia' esteja marcada na aba inicial da planilha
         if self.isRestPotHabilitada:
+            logger.info(colored("Restricao de ATENDIMENTO DE POTENCIA", color="cyan"))
             modelo.atendePot = Constraint(modelo.subsistemas, modelo.periodosTotal, modelo.condicoes, rule=restAtendePot);
-
+        
+        logger.info(colored("Adiciona restricoes", color="green"))
         return;
     
     def criaRestricoesFisicas(self):
+        logger.info(30*"-")
+        logger.info(colored("Criando restricoes FISICAS DO SISTEMA", color="blue"))
         modelo = self.modelo;
         
         # restricao de nos ficticios o somatorio dos fluxos eh nulo
@@ -641,6 +687,7 @@ class Problema:
             subsis = modelo.sin.subsistemas[isis];
             return (sum(modelo.interc[jsis,isis,ipat,iper,icen]*(1-subsis.perdasInterc[jsis][ipat][iper]) for jsis in modelo.subsistemas) \
                     - sum(modelo.interc[isis,jsis,ipat,iper,icen] for jsis in modelo.subsistemas) == 0);
+        logger.info(colored("Restricao de SOMA DOS NOS FC = 0", color="cyan"))
         modelo.NoFic = Constraint(self.subsFic, modelo.patamares, modelo.periodosTotal, modelo.condicoes, rule=restNoFic);
 
         # restricao de nos ficticios o somatorio dos fluxos eh nulo
@@ -648,6 +695,7 @@ class Problema:
             subsis = modelo.sin.subsistemas[isis];
             return (sum(modelo.intercPot[jsis,isis, iper, icen]*(1-subsis.perdasInterc[jsis][0][iper]) for jsis in modelo.subsistemas) \
                     - sum(modelo.intercPot[isis,jsis, iper, icen] for jsis in modelo.subsistemas) == 0);
+        logger.info(colored("Restricao de SOMA DOS NOS FC = 0", color="cyan"))
         modelo.NoFicPot = Constraint(self.subsFic, modelo.periodosTotal, modelo.condicoes, rule=restNoFicPot);
 
         # restricao de proibicao de deficit de energia em submercados sem carga
@@ -656,6 +704,7 @@ class Problema:
             if modelo.demanda[isis,ipat,iper,icen] == 0:
                 return (modelo.deficit[isis,ipat,iper,icen] == 0);
             else: return Constraint.Feasible;
+        logger.info(colored("Restricao de PROIBICAO DE DEFICIT DE ENERGA EM FC", color="cyan"))
         modelo.DefEnergSub = Constraint(modelo.subsistemas, modelo.periodosTotal, modelo.condicoes, modelo.patamares, rule=restDefEnergSub);
 
         # restricao de proibicao de deficit de potencia em submercados sem carga
@@ -664,23 +713,28 @@ class Problema:
             if modelo.demanda[isis,0,iper,icen] == 0:
                 return (modelo.deficitPot[isis,iper,icen] == 0);
             else: return Constraint.Feasible;
+        logger.info(colored("Restricao de PROIBICAO DE DEFICIT DE POTENCIA EM FC", color="cyan"))
         modelo.DefPotSub = Constraint(modelo.subsistemas, modelo.periodosTotal, modelo.condicoes, rule=restDefPotSub);
 
         return;
 
     def criaRestricoesCapacidades(self):
+        logger.info(30*"-")
+        logger.info(colored("Criando restricoes de CAPACIDADE", color="blue"))
         modelo = self.modelo;
         modelo.sin = self.sin;
 
         # restricao de geracao maxima das termicas
         def restProdTermica (modelo, term, ipat, iper, icen):
             return (modelo.prodTerm[term,ipat,iper,icen] <= modelo.sin.listaGeralTerm[term].potUsina[iper]);
+        logger.info(colored("Restricao de GER MAX UTEs", color="cyan"))
         modelo.prodTermica = Constraint(modelo.termExist, modelo.patamares, modelo.periodosTotal, modelo.condicoes, rule=restProdTermica);
 
         # restricao de geracao maxima das termicas continuas da expansao
         def restProdTermicaCont (modelo, term, ipat, iper, icen):
             proj = modelo.sin.listaGeralProjTerm[term]
             return (modelo.prodTermCont[term,ipat,iper,icen] <= proj.potUsina*modelo.capTermCont[term,iper]);
+        logger.info(colored("Restricao de GER MAX UTEs EM EXPANSAO", color="cyan"))
         modelo.prodTermicaContRest = Constraint(modelo.projTermCont, modelo.patamares, modelo.periodosTotal, modelo.condicoes, rule=restProdTermicaCont);
         
         # restricao de inflexibilidade das termicas existentes - geracao termica minima
@@ -689,17 +743,20 @@ class Problema:
                 return (modelo.prodTerm[term,ipat,iper,icen] >= modelo.sin.listaGeralTerm[term].potUsina[iper]*modelo.inflexTermica[term,iper]);
             else:
                 return (modelo.prodTerm[term,ipat,iper,icen] == 0);
+        logger.info(colored("Restricao de INFLEX UTEs", color="cyan"))
         modelo.minimaGeracaoTerm = Constraint(modelo.termExist, modelo.patamares, modelo.periodosTotal, modelo.condicoes, rule=restInflexibilidadeTerm);
     
         # restricao de inflexibilidade das termicas continuas da expansao
         def restInflexContExp (modelo, term, ipat, iper, icen):
             proj = modelo.sin.listaGeralProjTerm[term]
             return (modelo.prodTermCont[term,ipat,iper,icen] >= proj.potUsina*modelo.capTermCont[term,iper]*proj.inflexContinua[iper%12]);
+        logger.info(colored("Restricao de INFLEX UTEs EM EXPANSAO", color="cyan"))
         modelo.inflexExp = Constraint(modelo.projTermCont, modelo.patamares, modelo.periodosTotal, modelo.condicoes, rule=restInflexContExp);
         
         # restricao de capacidade de interligacao
         def restCapInterlig (modelo, isis, jsis, ipat, iper, icen):
             return (modelo.interc[isis,jsis,ipat,iper,icen] <= modelo.sin.subsistemas[isis].capExistente[jsis][ipat][iper] + modelo.capExpInter[isis,jsis,iper]);
+        logger.info(colored("Restricao de CAPACIDADE DE INTERLIGACAO", color="cyan"))
         modelo.capInterlig = Constraint(modelo.subsistemas, modelo.subsistemas, modelo.patamares, modelo.periodosTotal, modelo.condicoes, rule=restCapInterlig);
         
         # restricao da capacidade de Potencia de interligacao
@@ -708,18 +765,21 @@ class Problema:
                 return (modelo.intercPot[isis,jsis,iper,icen] <= (modelo.sin.subsistemas[isis].capExistente[jsis][0][iper] + modelo.capExpInter[isis,jsis,iper])*modelo.sin.subsistemas[isis].limiteInterc[jsis]);
             else:
                 return (modelo.intercPot[isis,jsis,iper,icen] <= modelo.sin.subsistemas[isis].capExistente[jsis][0][iper] + modelo.capExpInter[isis,jsis,iper]);
+        logger.info(colored("Restricao de CAPACIDADE DE POTENCIA DE INTERLIGACAO", color="cyan"))
         modelo.capInterligPot = Constraint(modelo.subsistemas, modelo.subsistemas, modelo.periodosTotal, modelo.condicoes, rule=restCapInterligPot);
         
         # restricao de capacidade do agrupamento de interligacoes
         def restAgrint (modelo, agrint_ind, ipat, iper, icen):
             agrint = modelo.sin.agrints[agrint_ind];
             return (sum(modelo.interc[isis,jsis,ipat,iper,icen] for (isis,jsis) in agrint.fluxos) <= agrint.limites[ipat][iper] + sum(modelo.capExpInter[isis,jsis,iper] for (isis,jsis) in agrint.fluxos));
+        logger.info(colored("Restricao de CAPACIDADE DO AGRINT", color="cyan"))
         modelo.agrint = Constraint(modelo.conjAgrint, modelo.patamares, modelo.periodosTotal, modelo.condicoes, rule=restAgrint);
 
         # restricao de capacidade de potencia do agrupamento de interligacoes
         def restAgrintPot (modelo, agrint_ind, iper, icen):
             agrint = modelo.sin.agrints[agrint_ind];
             return (sum(modelo.intercPot[isis,jsis,iper,icen] for (isis,jsis) in agrint.fluxos) <= agrint.limites[0][iper] + sum(modelo.capExpInter[isis,jsis,iper] for (isis,jsis) in agrint.fluxos));
+        logger.info(colored("Restricao de CAPACIDADE DE POTENCIA DO AGRINT", color="cyan"))
         modelo.agrintPot = Constraint(modelo.conjAgrint, modelo.periodosTotal, modelo.condicoes, rule=restAgrintPot);
 
         # restricao de geracao RD - carga leve
@@ -729,6 +789,7 @@ class Problema:
                 return (modelo.prodTermCont[term,modelo.sin.nPatamares-1,iper,icen] == 0);
             else:
                 return Constraint.Feasible
+        logger.info(colored("Restricao de GER PROJ UTE PATAMAR LEVE", color="cyan"))
         modelo.prodRDLeveRest = Constraint(modelo.projTermCont, modelo.periodosTotal, modelo.condicoes, rule=restProdRDLeve);
 
         # restricao de geracao RD - carga media
@@ -738,11 +799,14 @@ class Problema:
                 return (modelo.prodTermCont[term,modelo.sin.nPatamares-2,iper,icen] == 0);
             else:
                 return Constraint.Feasible
+        logger.info(colored("Restricao de GER PROJ UTE PATAMAR MEDIO", color="cyan"))
         modelo.prodRDMediaRest = Constraint(modelo.projTermCont, modelo.periodosTotal, modelo.condicoes, rule=restProdRDMedia);
 
         return;
     
     def criaRestricoesInvestimentos(self):
+        logger.info(30*"-")
+        logger.info(colored("Criando restricoes de INVESTIMENTO", color="blue"))
         modelo = self.modelo;
         modelo.sin = self.sin;
         
@@ -754,11 +818,13 @@ class Problema:
             else:
                 return(modelo.investHidro[hidro,iper] >= 0);  
         # adiciona a restricao
+        logger.info(colored("Restricao de DATA MINIMA ENTRADA UHE", color="cyan"))
         modelo.dataMinInvHidro = Constraint(modelo.projUHENova, modelo.periodosTotal, rule=restDataMinInvHidro);
 
         # restricao de investimento hidro unitario
         def restUmInvHidro (modelo,hidro):
             return (sum(modelo.investHidro[hidro,iper] for iper in modelo.periodosTotal) <= 1); 
+        logger.info(colored("Restricao de INVESTIMENTO UHE UNITARIO", color="cyan"))
         modelo.umInvHidro = Constraint(modelo.projUHENova, rule=restUmInvHidro);
         
         # restricao de investimento crescente termico, ate a data de saída se houver
@@ -767,6 +833,7 @@ class Problema:
                 return (modelo.capTermCont[term,iper] == 0);
             else:
                 return (modelo.capTermCont[term,iper] >= modelo.capTermCont[term,iper-1]);
+        logger.info(colored("Restricao de INVESTIMENTO CRESCENTE TERMICO", color="cyan"))
         modelo.naoInvTerm = Constraint(modelo.projTermCont, modelo.periodosTotal, rule=restNaoInvTerm);
 
         # restricao de investimento crescente renovavel
@@ -775,6 +842,7 @@ class Problema:
                 return (modelo.capRenovCont[renov,iper] == 0); 
             else:
                 return (modelo.capRenovCont[renov,iper] >= modelo.capRenovCont[renov,iper-1]); 
+        logger.info(colored("Restricao de INVESTIMENTO CRESCENTE RENOVAVEL", color="cyan"))
         modelo.naoInvRenov = Constraint(modelo.projRenovCont, modelo.periodosTotal, rule=restNaoInvRenov);
 
         # capacidade crescente em intercambio
@@ -783,40 +851,47 @@ class Problema:
                 return (modelo.capExpInter[isis,jsis,iper] == 0);
             else:
                 return (modelo.capExpInter[isis,jsis,iper] >= modelo.capExpInter[isis,jsis,iper-1]);
+        logger.info(colored("Restricao de INVESTIMENTO CRESCENTE INTERCAMBIO", color="cyan"))
         modelo.naoInvInter = Constraint(modelo.subsistemas, modelo.subsistemas, modelo.periodosTotal, rule=restNaoInvInter);    
         
         # vinculacao entre a bidercionalidade da expansao dos fluxos
         def restInterBiDirecional(m,isis,jsis,iper):
             return (modelo.capExpInter[isis,jsis,iper] == modelo.capExpInter[jsis,isis,iper]);
-        
+        logger.info(colored("Restricao de BIDIRECIONALIDADE INTERCAMBIO", color="cyan"))
         modelo.interBiDirecional = Constraint(modelo.subsistemas, modelo.subsistemas, modelo.periodosTotal, rule=restInterBiDirecional);    
         
         return;
 
     def criaRestricoesDuais(self):
         # monta as restricoes dos custos marginais de energia, potencia e duplo
-        
+        logger.info(30*"-")
+        logger.info(colored("Criando restricoes DUAIS (ENERGIA E POTENCIA)", color="blue"))
         # CME de Energia
         def restDualE(modelo, iano):
             if iano < 3:
                 return modelo.dE[iano] >= 0.01;
             else:
                 return modelo.dE[iano] >= modelo.rhsDE;
+        logger.info(colored("Restricao DUAL ENERGIA", color="cyan"))
         self.modelo.DualE = Constraint(self.modelo.anos, rule=restDualE);
 
         # CME de Potencia
         def restDualP(modelo, iano):
             return modelo.dP[iano] >=modelo.rhsDP;
+        logger.info(colored("Restricao DUAL POTENCIA", color="cyan"))
         self.modelo.DualP = Constraint(self.modelo.anos, rule=restDualP);
 
         # CME de Duplo (Energia e Potencia)
         def restDualD(modelo, iano):
             return modelo.dD[iano] >= modelo.rhsDD;
+        logger.info(colored("Restricao DUAL DUPLA", color="cyan"))
         self.modelo.DualD = Constraint(self.modelo.anos, rule=restDualD);
         
         return;
 
     def criaRestricoesReducaoProblema(self):
+        logger.info(30*"-")
+        logger.info(colored("Criando restricoes de REDUCAO DO PROBLEMA", color="blue"))
         #restricoes para reduzir tamanho do problema
         modelo = self.modelo;
         modelo.sin = self.sin;
@@ -826,6 +901,7 @@ class Problema:
             if iper%12 != 0 and iper%12 != 6:
                 return modelo.investHidro[iproj, iper] == 0;
             else: return Constraint.Feasible;
+        logger.info(colored("Restricao INVESTIMENTO UHE JAN-JUL", color="cyan"))
         modelo.invHidroJan = Constraint(modelo.projUHENova, modelo.periodosTotal, rule=resInvHidroJan);
 
         # investimento em termicas continuas apenas em janeiro/julho
@@ -833,6 +909,7 @@ class Problema:
             if iper%12 != 0 and iper%12 != 6:
                 return modelo.capTermCont[iproj, iper] == modelo.capTermCont[iproj, iper-1];
             else: return Constraint.Feasible;
+        logger.info(colored("Restricao INVESTIMENTO UTE JAN-JUL", color="cyan"))
         modelo.invTermContJan = Constraint(modelo.projTermCont, modelo.periodosTotal, rule=resInvTermContJan);
 
         # investimento em renovaveis continuas apenas em janeiro/julho
@@ -840,6 +917,7 @@ class Problema:
             if iper%12 != 0 and iper%12 != 6:
                 return modelo.capRenovCont[iproj, iper] == modelo.capRenovCont[iproj, iper-1];
             else: return Constraint.Feasible;
+        logger.info(colored("Restricao INVESTIMENTO RENOVAVEIS JAN-JUL", color="cyan"))
         modelo.invRenovContJan = Constraint(modelo.projRenovCont, modelo.periodosTotal, rule=resInvRenovContJan);
 
         # investimento em expansao de intercambio apenas em janeiro/julho
@@ -847,6 +925,7 @@ class Problema:
             if iper%12 != 0 and iper%12 != 6:
                 return modelo.capExpInter[isis, jsis, iper] == modelo.capExpInter[isis, jsis, iper-1];
             else: return Constraint.Feasible;
+        logger.info(colored("Restricao INVESTIMENTO EXPANSAO INTERCAMBIO JAN-JUL", color="cyan"))
         modelo.invExpInterJan = Constraint(modelo.subsistemas, modelo.subsistemas, modelo.periodosTotal, rule=resInvExpInterJan);
 
         # investimento em termicas continuas apenas em janeiro/julho
@@ -854,11 +933,14 @@ class Problema:
             if iper%12 != 0 and iper%12 != 6:
                 return modelo.capReversivel[iproj, iper] == modelo.capReversivel[iproj, iper-1];
             else: return Constraint.Feasible;
+        logger.info(colored("Restricao INVESTIMENTO REVERSIVEL JAN-JUL", color="cyan"))
         modelo.invReversivelJan = Constraint(modelo.projReversivel, modelo.periodosTotal, rule=resInvReversivelJan);
 
         return;
 
     def createIncrementais(self):
+        logger.info(30*"-")
+        logger.info(colored("Criando restricoes de EXPANSAO INCREMENTAL DE CAPACIDADE", color="blue"))
         m = self.modelo;
         
         m.capIncTermCont = Var(m.projTermCont, m.periodosTotal, domain=Reals);
@@ -872,6 +954,7 @@ class Problema:
                 return m.capIncTermCont[iobj,iper] == m.capTermCont[iobj,iper] - m.capTermCont[iobj,iper-1];
             else:
                 return m.capIncTermCont[iobj,iper] == m.capTermCont[iobj,iper];
+        logger.info(colored("Restricao EXPANSAO INCREMENTAL TERMICA", color="cyan"))
         m.IncrementalTerm = Constraint(m.projTermCont, m.periodosTotal, rule=restIncrementalTerm);
 
         # Decisao Renovavel Continua Incremental
@@ -880,6 +963,7 @@ class Problema:
                 return m.capIncRenovCont[iobj,iper]  == m.capRenovCont[iobj,iper] - m.capRenovCont[iobj,iper-1];
             else:
                 return m.capIncRenovCont[iobj,iper]  == m.capRenovCont[iobj,iper];
+        logger.info(colored("Restricao EXPANSAO INCREMENTAL RENOVAVEL", color="cyan"))
         m.IncrementalRenovCont = Constraint(m.projRenovCont, m.periodosTotal, rule=restIncrementalRenovCont);
 
         # Decisao Reversivel Incremental
@@ -888,6 +972,7 @@ class Problema:
                 return m.capIncReversivel[iobj,iper]  == m.capReversivel[iobj,iper] - m.capReversivel[iobj,iper-1];
             else:
                 return m.capIncReversivel[iobj,iper]  == m.capReversivel[iobj,iper];
+        logger.info(colored("Restricao EXPANSAO INCREMENTAL REVERSIVEL", color="cyan"))
         m.IncrementalReversivel = Constraint(m.projReversivel, m.periodosTotal, rule=restIncrementalReversivel);
 
         # Decisao Intercambio Incremental
@@ -896,12 +981,15 @@ class Problema:
                 return m.capIncExpInter[isis,jsis,iper]  == m.capExpInter[isis,jsis,iper] - m.capExpInter[isis,jsis,iper-1];
             else:
                 return m.capIncExpInter[isis,jsis,iper]  == m.capExpInter[isis,jsis,iper];
+        logger.info(colored("Restricao EXPANSAO INCREMENTAL INTERCAMBIO", color="cyan"))
         m.IncrementalExpInter = Constraint(m.subsistemas, m.subsistemas, m.periodosTotal, rule=restIncrementalExpInter);
         
         return;
     
     # Funcao objetivo
     def objetivo(self):
+        logger.info(30*"-")
+        logger.info(colored("Criando FUNCAO OBJETIVO", color="blue"))
         modelo = self.modelo;
         sin = self.sin;
         modelo.sin=sin;
@@ -969,17 +1057,23 @@ class Problema:
         return;
 
     def relaxar (self):
+        logger.info(30*"-")
+        logger.info(colored("Criando RELAXACAO DE VARIAVEIS", color="blue"))
         modelo = self.modelo;
         
         # relaxa as varaveis de decisao de investimento hidro e habilita os duais
+        logger.info(colored("Slack vars HIDRO", color="cyan"))
         modelo.investHidro.domain = NonNegativeReals;
+        logger.info(colored("Slack vars TERMICAS", color="cyan"))
         modelo.capTermCont.domain = NonNegativeReals;
+        logger.info(colored("Habilidade vars duais", color="cyan"))
         modelo.dual = Suffix(direction=Suffix.IMPORT)
         
         return;
         
     
     def prepararDualEnergia(self):
+        logger.info(colored("Prepara VAR DUAL ENERGIA", color="blue"))
         modelo=self.modelo;
         
         # seta os rhs para habilitar apenas o dE
@@ -988,6 +1082,7 @@ class Problema:
         return;
 
     def prepararDualDuplo(self):
+        logger.info(colored("Prepara VAR DUAL DUPLA", color="blue"))
         modelo=self.modelo;
 
         # seta os rhs para habilitar dE e dP
@@ -996,6 +1091,7 @@ class Problema:
         return;
 
     def prepararDualPotencia(self):
+        logger.info(colored("Prepara VAR DUAL POTENCIA", color="blue"))
         modelo=self.modelo;
 
         # seta os rhs para habilitar apenas o dP

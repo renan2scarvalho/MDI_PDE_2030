@@ -209,10 +209,12 @@ class Control:
         # verifica se o usuario deseja usar todas as combinacoes de series hidrolicas e eolicas ou combinacoes intercaladas
         if (self.recebe_dados.pegaEscalar("O9")==1):
             self.tipoCombHidroEol = "completa";
-            logger.info(colored("Combinação estocástica completa selecionada", color="yellow"))
+            logger.info(30*"-")
+            logger.info(colored("Combinação estocástica completa selecionada", color="blue"))
         elif (self.recebe_dados.pegaEscalar("O10")==1):
             self.tipoCombHidroEol = "intercalada";
-            logger.info(colored("Combinação estocástica intercalada selecionada", color="yellow"))
+            logger.info(30*"-")
+            logger.info(colored("Combinação estocástica intercalada selecionada", color="blue"))
         else:
             logger.info("Forma de incorporacao das series eolicas nao escolhida.");
         
@@ -266,7 +268,8 @@ class Control:
         # abre os arquivos
         saidaEner = open(self.caminho + "serieHidro.txt", "w");
         saidaPot = open(self.caminho + "pdispHidro.txt", "w");
-        print("ESCRITA DAS SERIES DE ENERGIA E POTENCIA POR SUBSISTEMA")
+        logger.info(30*"-")
+        logger.info(colored("ESCRITA DAS SERIES DE ENERGIA E POTENCIA POR SUBSISTEMA", color="yellow"))
         # percorre os cenarios
         for icen in range(sin.numHidros):
             
