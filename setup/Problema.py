@@ -310,7 +310,7 @@ class Problema:
         # produto da producao e patamar eh igual a serie de energia 
         def resSomatorioHidroNovas(modelo, iuhe, iper, icen):
             return ( sum(modelo.prodHidroNova[iuhe, ipat, iper, icen]*modelo.sin.duracaoPatamar[ipat][iper] for ipat in modelo.patamares) <= ( modelo.energHidroNova[iuhe,iper,icen]*(sum(modelo.investHidro[iuhe,iperaux] for iperaux in range(0,iper+1))) ) );
-        logger.info(colored("Restricao de NOVAS UHEs", coor="cyan"))
+        logger.info(colored("Restricao de NOVAS UHEs", color="cyan"))
         modelo.somatorioHidroNovas = Constraint(modelo.projUHENova, modelo.periodosTotal, modelo.condicoes, rule=resSomatorioHidroNovas);
         
         # restricoes que acoplam a motorizacao das usinas novas com seu respectivo investimento
@@ -700,7 +700,6 @@ class Problema:
             logger.info(colored("Restricao de ATENDIMENTO DE POTENCIA", color="cyan"))
             modelo.atendePot = Constraint(modelo.subsistemas, modelo.periodosTotal, modelo.condicoes, rule=restAtendePot);
         
-        logger.info(colored("Adiciona restricoes", color="green"))
         return;
     
     def criaRestricoesFisicas(self):
@@ -1100,6 +1099,7 @@ class Problema:
     def relaxar (self):
         logger.info(30*"-")
         logger.info(colored("Criando RELAXACAO DE VARIAVEIS", color="blue"))
+        logger.info(30*"-")
         modelo = self.modelo;
         
         # relaxa as varaveis de decisao de investimento hidro e habilita os duais

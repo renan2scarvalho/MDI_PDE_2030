@@ -16,6 +16,7 @@ try:
     import os, shutil;
     from pprint import *;
 
+    from pathlib import Path
     from termcolor import colored
     from src.prompt_data import parametros_prompt
     from dynaconf import Dynaconf
@@ -55,7 +56,7 @@ except:
     print("Consulte o arquivo erro.txt");
     # cria o arquivo txt
     # saidaResul = open(caminho + "erro.txt", "w");
-    saidaResul = open(caminho + "/" + "erro.txt", "w");
+    saidaResul = open(Path(caminho) / "erro.txt", "w");
     saidaResul.write(traceback.format_exc());
     sys.exit(1);
 elapsed = time.process_time();

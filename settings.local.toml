@@ -1,4 +1,5 @@
 [default]
+PATH_CPLEX = "C:/Program Files/IBM/ILOG/CPLEX_Studio_Community201/cplex/bin/x64_win64/cplex.exe"
 
 [development]
 RUN_S00 = true

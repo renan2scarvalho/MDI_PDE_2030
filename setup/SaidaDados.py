@@ -17,6 +17,8 @@ try:
     import traceback;
     import shutil;
 
+    from pathlib import Path
+    from termcolor import colored
     from dynaconf import Dynaconf
     from src.init_loguru import get_loguru_logger
     settings = Dynaconf(
@@ -111,7 +113,8 @@ class SaidaDados:
         m = self.modelo;
         
         # cria o arquivo txt
-        saidaResul = open(self.caminho + "balancoEnergiaSIN.txt", "w");
+        logger.info(colored("Escrevendo BALANCO DE ENERGIA SIN", color="green"))
+        saidaResul = open(Path(self.caminho) / "balancoEnergiaSIN.txt", "w");
         
         listaTerm = [usina for k,usina in self.sin.listaGeralTerm.items()];
         def getKey(u):

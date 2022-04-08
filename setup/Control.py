@@ -9,8 +9,10 @@ try:
     from pyomo.environ import *;
     from pyomo.opt import *;
     import os, jsonpickle;
-    from termcolor import colored
 
+    from pathlib import Path
+    from termcolor import colored
+    from datetime import datetime
     from src.prompt_data import parametros_prompt
     from dynaconf import Dynaconf
     from src.init_loguru import get_loguru_logger
@@ -53,10 +55,12 @@ class Control:
         self.imprimeSeriesHidro();
  
         # cria o problema passando os parametros do carregaInicio
-        self.problema = Problema(self.recebe_dados, self.sin, self.isRestPotHabilitada, self.isRestExpJanHabilitada, self.isPerpetHabilitada, self.fatorCarga, self.anoValidadeTemp, self.fatorValidadeTemp, self.isIntercambLimitado, self.subsFic);
+        self.problema = Problema(self.recebe_dados, self.sin, self.isRestPotHabilitada, self.isRestExpJanHabilitada, 
+                                self.isPerpetHabilitada, self.fatorCarga, self.anoValidadeTemp, self.fatorValidadeTemp, 
+                                self.isIntercambLimitado, self.subsFic);
         
         # habilita o cplex
-        optsolver = SolverFactory("cplex", executable= "C:/Program Files/IBM/ILOG/CPLEX_Studio_Community201/cplex/bin/x64_win64/cplex.exe");
+        optsolver = SolverFactory("cplex", executable=settings.PATH_CPLEX);
         logger.info(30*"-")
         logger.info(colored("Modelo Criado", color="yellow"));
         logger.info(30*"-")
@@ -76,13 +80,16 @@ class Control:
         optsolver.options['emphasis_memory'] = 'y';
         optsolver.options['workmem'] = 12048;
 
-        print("Executando o CPLEX");
-
+        logger.info(30*"-")
+        logger.info(colored("Executando o CPLEX", color="yellow"));
+        start_cplex = datetime.now()
         results = optsolver.solve(self.problema.modelo, load_solutions=True);#symbolic_solver_labels=True, tee=True);
-
-        print("Impressão de Resultados");
+        logger.info(colored(f"Tempo de execução: {datetime.now() - start_cplex}", color="blue"))
+        logger.info(30*"-")
+        logger.info(colored("Impressão de Resultados", color="yellow"));
+        logger.info(30*"-")
         # escreve resultados em um txt
-        with open(self.caminho + "resultado.txt", "w") as saidaResul:
+        with open(Path(self.caminho) / "resultado.txt", "w") as saidaResul:
             results.write(ostream=saidaResul);
             
         # inicializa o objeto de saida de dados
