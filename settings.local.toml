@@ -1,5 +1,5 @@
 [default]
-PATH_CPLEX = "C:/Program Files/IBM/ILOG/CPLEX_Studio_Community201/cplex/bin/x64_win64/cplex.exe"
+PATH_CPLEX = "/opt/ibm/ILOG/CPLEX_Studio_Community201/cplex/bin/x86-64_linux/cplex"
 
 [development]
 RUN_S00 = true

@@ -6,7 +6,8 @@ try:
     from .SaidaNewave import SaidaNewave;
     from contextlib import suppress;
     from coopr.pyomo import *;
-    from pyomo.environ import *;
+    # from pyomo.environ import *;
+    import pyomo.environ as pyo
     from pyomo.opt import *;
     import os, jsonpickle;
 
@@ -60,7 +61,7 @@ class Control:
                                 self.isIntercambLimitado, self.subsFic);
         
         # habilita o cplex
-        optsolver = SolverFactory("cplex", executable=settings.PATH_CPLEX);
+        optsolver = pyo.SolverFactory("cplex", executable=settings.PATH_CPLEX);
         logger.info(30*"-")
         logger.info(colored("Modelo Criado", color="yellow"));
         logger.info(30*"-")
